@@ -1,16 +1,21 @@
+"""The module contains tests for Selenium bot algorithm."""
+import sys
+sys.path.append('../Wiki_selenium_tester')
+from unittest.mock import Mock
 import pytest
-from unittest.mock import Mock, MagicMock, PropertyMock
 from selenium import webdriver
 from selenium.common import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webelement import WebElement
-
-import pages
+from Wiki_selenium_tester import pages
 
 
 class TestTemplate:
+    """Class to be used as parent class for other test classes."""
 
     def setup_method(self):
+        """Creates the driver that will be used during testing process."""
+
         service = Service("C:\\Program Files (x86)\\chromedriver.exe")
         option = webdriver.ChromeOptions()
         option.add_argument('headless')
@@ -19,6 +24,7 @@ class TestTemplate:
 
 
 class TestMainWikiPage(TestTemplate):
+    """Tests of the MainWikiPage class."""
 
     def setup_method(self):
         super().setup_method()
@@ -46,12 +52,9 @@ class TestMainWikiPage(TestTemplate):
         result = self.page.search_for_selenium()
         assert result is True
 
-    # def test_is_title_matches_fail(self):
-    #     type(self.page.driver).title = PropertyMock(return_value="You will not pass!")
-    #     assert self.page.is_title_matches() is False
-
 
 class TestSeleniumWikiPage(TestTemplate):
+    """Tests of the SeleniumWikiPage class."""
 
     def setup_method(self):
         super().setup_method()
@@ -90,6 +93,7 @@ class TestSeleniumWikiPage(TestTemplate):
 
 
 class TestGoogleChromeWikiPage(TestTemplate):
+    """Tests of the GoogleChromeWikiPage class."""
 
     def setup_method(self):
         super().setup_method()
@@ -120,9 +124,11 @@ class TestGoogleChromeWikiPage(TestTemplate):
 
 
 class TestDinoGame(TestTemplate):
+    """Tests of the DinoGameWikiPage class."""
+
     def setup_method(self):
         super().setup_method()
-        self.page = pages.DinoGame(self.driver)
+        self.page = pages.DinoGameWikiPage(self.driver)
         self.page.driver.get("https://en.wikipedia.org/wiki/Dinosaur_Game")
 
     def teardown_method(self):
@@ -141,4 +147,3 @@ class TestDinoGame(TestTemplate):
 
 if __name__ == '__main__':
     pytest.main()
-
