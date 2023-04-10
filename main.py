@@ -1,14 +1,10 @@
-import time
-
 from selenium import webdriver
+from selenium.common import WebDriverException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from abc import ABC, abstractmethod
-from pages import MainWikiPage, SeleniumWikiPage, GoogleChromeWikiPage
+from pages import MainWikiPage, SeleniumWikiPage, GoogleChromeWikiPage, DinoGame
+from dino import Dino
 
 
 if __name__ == '__main__':
@@ -37,13 +33,25 @@ if __name__ == '__main__':
 
         chrome.click()
         chrome_page = GoogleChromeWikiPage(driver)
+        chrome_page.driver.maximize_window()
+        page_size = chrome_page.driver.get_window_size()
+
         chrome_page_colors = chrome_page.find_table_color()
         for color in chrome_page_colors:
             print(color)
 
         dino = chrome_page.find_dinosaur_game()
 
-        time.sleep(5)
+        dino_game = DinoGame(driver)
+
+        try:
+            dino_game.driver.get("chrome://dino")
+        except WebDriverException:
+            pass
+
+        if dino_game.wait_for_it("main-message"):
+            dino_play = Dino()
+            dino_play.start_game(page_size['width'], page_size['height'])
 
     except Exception as e:
         print(f"{e.__class__}: {e}")

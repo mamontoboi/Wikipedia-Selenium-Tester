@@ -1,17 +1,16 @@
 import re
-import time
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 from abc import ABC, abstractmethod
 
 
 class Driver:
+    """Driver class, that allows to establish connection between program and Chrome browser."""
+
     def __init__(self):
         self.PATH = "C:\\Program Files (x86)\\chromedriver.exe"
         self.service = Service(self.PATH)
@@ -20,10 +19,14 @@ class Driver:
 
     @property
     def driver(self):
+        """The method allows to access driver property of the instance."""
+
         return self.test_driver
 
 
 class AbstractPage(ABC):
+    """Abstract class is used as a template for the following web pages."""
+
     def __init__(self, page_driver):
         self.driver = page_driver
 
@@ -33,6 +36,7 @@ class AbstractPage(ABC):
 
 
 class MainWikiPage(AbstractPage):
+    """Automation methods for handling of Wikipedia main page."""
 
     def is_title_matches(self):
         return "Wikipedia" in self.driver.title
@@ -100,6 +104,18 @@ class GoogleChromeWikiPage(AbstractPage):
         if self.wait_for_it("image"):
             dino = self.driver.find_element(By.LINK_TEXT, "Dinosaur Game")
             dino.click()
+
+
+class DinoGame(AbstractPage):
+
+    def is_title_matches(self):
+        return "Dinosaur Game" in self.driver.title
+
+    def wait_for_it(self, id):
+        WebDriverWait(driver=self.driver, timeout=10).until(
+            EC.element_to_be_clickable((By.ID, id))
+        )
+        return True
 
 
 

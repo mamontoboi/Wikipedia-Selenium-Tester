@@ -119,6 +119,26 @@ class TestGoogleChromeWikiPage(TestTemplate):
         assert "Dinosaur Game" in self.driver.title
 
 
+class TestDinoGame(TestTemplate):
+    def setup_method(self):
+        super().setup_method()
+        self.page = pages.DinoGame(self.driver)
+        self.page.driver.get("https://en.wikipedia.org/wiki/Dinosaur_Game")
+
+    def teardown_method(self):
+        self.page.driver.quit()
+
+    def test_is_title_matches_pass(self):
+        assert self.page.is_title_matches() is True
+
+    def test_wait_for_it_pass(self):
+        assert self.page.wait_for_it("cite_ref-1") is True
+
+    def test_wait_for_it_fail(self):
+        with pytest.raises(TimeoutException):
+            self.page.wait_for_it("You_will_not_find")
+
+
 if __name__ == '__main__':
-    pytest.main(['-d'])
+    pytest.main()
 
