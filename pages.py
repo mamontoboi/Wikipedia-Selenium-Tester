@@ -1,50 +1,38 @@
+"""This module contains classes, representing separate web pages on the Wikipedia."""
+
 import re
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
+from abc import ABC, abstractmethod
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from abc import ABC, abstractmethod
-
-
-class Driver:
-    """Driver class, that allows to establish connection between program and Chrome browser."""
-
-    def __init__(self):
-        self.PATH = "C:\\Program Files (x86)\\chromedriver.exe"
-        self.service = Service(self.PATH)
-        self.test_driver = webdriver.Chrome(service=self.service)
-        self.test_driver.implicitly_wait(3)
-
-    @property
-    def driver(self):
-        """The method allows to access driver property of the instance."""
-
-        return self.test_driver
 
 
 class AbstractPage(ABC):
-    """Abstract class is used as a template for the following web pages."""
+    """Abstract class to be used as a template."""
 
     def __init__(self, page_driver):
         self.driver = page_driver
 
     @abstractmethod
     def is_title_matches(self):
-        pass
+        """Method to be re-defined in each child class."""
 
 
 class MainWikiPage(AbstractPage):
-    """Automation methods for handling of Wikipedia main page."""
+    """Automation methods for handling of the Wikipedia main page."""
 
     def is_title_matches(self):
         return "Wikipedia" in self.driver.title
 
     def locate_searchbar(self):
+        """Looks for search bar on the main Wikipedia page."""
+
         return self.driver.find_element(By.ID, "searchInput")
 
     def search_for_selenium(self):
+        """Inputs `Selenium (software)` into the search bar."""
+
         page_searchbar = self.locate_searchbar()
         page_searchbar.clear()
         page_searchbar.send_keys("Selenium (software)")
@@ -53,17 +41,22 @@ class MainWikiPage(AbstractPage):
 
 
 class SeleniumWikiPage(AbstractPage):
+    """Automation methods for handling of the Selenium software Wiki page."""
 
     def is_title_matches(self):
         return "Selenium" in self.driver.title
 
     def wait_for_it(self, class_name):
+        """Ensures that the Selenium page is loaded."""
+
         WebDriverWait(driver=self.driver, timeout=10).until(
             EC.presence_of_element_located((By.CLASS_NAME, class_name))
         )
         return True
 
     def find_chapters(self):
+        """Collects all chapters from Selenium web page."""
+
         if self.wait_for_it("image"):
             elements = self.driver.find_elements(By.TAG_NAME, "h3")
             cleared_elements = set()
@@ -75,20 +68,26 @@ class SeleniumWikiPage(AbstractPage):
                     cleared_elements.add(element_text)
 
             return cleared_elements
+        return False
 
 
 class GoogleChromeWikiPage(AbstractPage):
+    """Automation methods for handling of the Google Chrome Wiki page."""
 
     def is_title_matches(self):
         return "Google Chrome" in self.driver.title
 
     def wait_for_it(self, class_name):
+        """Ensures that the Google Chrome Wiki web page is loaded."""
+
         WebDriverWait(driver=self.driver, timeout=10).until(
             EC.element_to_be_clickable((By.CLASS_NAME, class_name))
         )
         return True
 
     def find_table_color(self):
+        """Collects color specifications from cells, containing 'yes' or 'no' in table of the Google Chrome Page."""
+
         if self.wait_for_it("image"):
             table_yes = self.driver.find_element(By.CLASS_NAME, "table-yes")
             green_color = table_yes.value_of_css_property('background')
@@ -101,21 +100,23 @@ class GoogleChromeWikiPage(AbstractPage):
             return green_color, red_color
 
     def find_dinosaur_game(self):
+        """Looks for the link to the Dinosaur Game Wiki page."""
+
         if self.wait_for_it("image"):
             dino = self.driver.find_element(By.LINK_TEXT, "Dinosaur Game")
             dino.click()
+        return True
 
 
-class DinoGame(AbstractPage):
+class DinoGameWikiPage(AbstractPage):
+    """Automation methods for handling of the Dinosaur Game Wiki page."""
 
     def is_title_matches(self):
         return "Dinosaur Game" in self.driver.title
 
-    def wait_for_it(self, id):
+    def wait_for_it(self, id_):
+        """Ensures that the Dinosaur Game Wiki web page is loaded."""
         WebDriverWait(driver=self.driver, timeout=10).until(
-            EC.element_to_be_clickable((By.ID, id))
+            EC.element_to_be_clickable((By.ID, id_))
         )
         return True
-
-
-
