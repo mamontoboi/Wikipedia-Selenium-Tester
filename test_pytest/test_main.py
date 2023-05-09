@@ -1,13 +1,12 @@
 """The module contains tests for Selenium bot algorithm."""
-import sys
-sys.path.append('../Wiki_selenium_tester')
+
 from unittest.mock import Mock
 import pytest
 from selenium import webdriver
 from selenium.common import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webelement import WebElement
-from Wiki_selenium_tester import pages
+from .. import pages
 
 
 class TestTemplate:
